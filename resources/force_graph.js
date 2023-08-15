@@ -1,3 +1,8 @@
+/* Global variables. */
+var no_highlight = false;
+var keep_on_text = [];
+var keep_on_circle = [];
+
 function color(role) {
     if (role === 1 || role === "OpenProt") {
         return "#D46A6A";
@@ -9,8 +14,52 @@ function color(role) {
     }
 }
 
+function wrap(text, width) {
+    text.each(function () {
+        var text = d3.select(this),
+            words = text.text().split(/\s+/).reverse(),
+            word,
+            line = [],
+            lineNumber = 0,
+            lineHeight = 1.1, // ems
+            x = text.attr("x"),
+            y = text.attr("y"),
+            dy = 0, //parseFloat(text.attr("dy")),
+            tspan = text.text(null)
+                        .append("tspan")
+                        .attr("x", x)
+                        .attr("y", y)
+                        .attr("dy", dy + "em");
+        while (word = words.pop()) {
+            line.push(word);
+            tspan.text(line.join(" "));
+            if (tspan.node().getComputedTextLength() > width || word === "|") {
+                line.pop();
+                tspan.text(line.join(" "));
+                if (word === "|") {
+                    line = [];
+                } else {
+                    line = [word];
+                }
+                tspan = text.append("tspan")
+                            .attr("x", x)
+                            .attr("y", y)
+                            .attr("dy", ++lineNumber * lineHeight + dy + "em")
+                            .text(word);
+            }
+        }
+    });
+}
+
 function dragstart(d) {
+    no_highlight = true;
     d3.select(this).classed("fixed", d.fixed = true);
+    d3.select(this.nextSibling).remove();
+    d3.select(this.nextSibling).remove();
+}
+
+function dragend(d) {
+    no_highlight = false;
 }
 
 function draw_force_graph(graph_json) {
@@ -62,27 +111,52 @@ function draw_force_graph(graph_json) {
         .attr("r", function(d) { return rScale(G.degree(d.id)); })
         .style("fill", function(d) { return color(d.role); })
         .call(force.drag().on("dragstart", dragstart))
+        .call(force.drag().on("dragend", dragend))
         .on("click", function(d) {
             search_name(d.name, G, svg_graph);
         })
         .on("mouseover", function(d) {
+            if (keep_on_text.indexOf(d.id) !== -1 || no_highlight) {
+                return;
+            }
+
             d3.select(this)
                 .style("stroke", "#000")
                 .style("stroke-width", "3px");
 
             d3.select(this.nextSibling).remove();
-            d3.select(this.parentNode).moveToFront()
-                .append("text")
+            var parentNode = d3.select(this.parentNode).moveToFront();
+
+            var bbox;
+            var padding = 3;
+            var rect = parentNode.append("rect")
+                .attr("x", function(d) {
+                    return d.x - padding;
+                })
+                .attr("y", function(d) {
+                    return d.y - padding;
+                })
+                .attr("fill", "#fff")
+                .attr("opacity", 0.9);
+
+            parentNode.append("text")
                 .attr("x", function(d) { return d.x + 18; })
                 .attr("y", function(d) { return d.y - 2; })
                 .attr("class", "indivLabel")
                 .text(function(d) {
                     return d.name;
+                })
+                .each(function() {
+                    bbox = this.getBBox();
+                    rect.attr("x", bbox.x - padding)
+                        .attr("y", bbox.y - padding)
+                        .attr("width", bbox.width + (2 * padding))
+                        .attr("height", bbox.height + (2 * padding));
                 });
         })
-        .on("mouseout", function(d)
-        {
+        .on("mouseout", function(d) {
             if (keep_on_text.indexOf(d.id) === -1) {
+                d3.select(this.nextSibling).remove();
                 d3.select(this.nextSibling).remove();
             }
             if (keep_on_circle.indexOf(d.id) === -1) {
@@ -132,6 +206,16 @@ function draw_force_graph(graph_json) {
             .attr("x", function(d) { return d.x + 18; })
             .attr("y", function(d) { return d.y - 2; });
     });
+
+    for (var i = 0; i < 200; i++) {
+        force.tick();
+    }
+    force.stop();
+
+    graph_json.nodes.forEach(function(d) {
+        d.fixed = true;
+    });
+
     return svg_graph;
 }
 
@@ -150,9 +234,6 @@ function name_to_id(name, G) {
     return null;
 }
 
-var keep_on_text = [];
-var keep_on_circle = [];
-
 function label_nodes(svg, filter_fn, text_on) {
     var nodes = svg.selectAll(".node")
         .filter(filter_fn)
@@ -169,13 +250,32 @@ function label_nodes(svg, filter_fn, text_on) {
         .style("stroke-width", "3px")
 
     if (text_on) {
-        nodes.append("text")
+        var rects = nodes.append("rect")
+            .attr("fill", "#fff")
+            .attr("opacity", 0.9)
+            // Initially set the width and height to 0,
+            // which will be updated later based on the text's size.
+            .attr("width", 0)
+            .attr("height", 0)
+            .moveToFront();
+
+        var texts = nodes.append("text")
             .attr("x", function(d) { return d.x + 18; })
             .attr("y", function(d) { return d.y - 2; })
             .attr("class", "indivLabel")
             .text(function(d) {
                 return d.name;
-            });
+            })
+            .each(function(d, i) {
+                var bbox = this.getBBox();
+                var padding = 3;
+                d3.select(rects[0][i])
+                    .attr("x", bbox.x - padding)
+                    .attr("y", bbox.y - padding)
+                    .attr("width", bbox.width + (2 * padding))
+                    .attr("height", bbox.height + (2 * padding));
+            })
+            .moveToFront();
     }
 }
 
@@ -207,11 +307,40 @@ function search_name(name, G, svg) {
         return ((id1 === id) || (id2 === id));
     });
     label_nodes(svg, function(d) {
-        return id === d.id;
-    }, true);
-    label_nodes(svg, function(d) {
         return neighbors.indexOf(d.id) !== -1;
     }, false);
+    label_nodes(svg, function(d) {
+        return id === d.id;
+    }, true);
+
+    var filter = svg.append("defs")
+        .append("filter")
+        .attr("id", "shadow")
+        .append("feDropShadow")
+        .attr("dx", 1)    // Offset of the shadow in the x direction
+        .attr("dy", 1)    // Offset in the y direction
+        .attr("stdDeviation", 2); // Blur amount
+
+    var top_offset = 40;
+    var right_offset = 150;
+    var caption = svg.append("text")
+        .attr("id", "caption1")
+        .attr("x", +svg.attr("width") - right_offset - 10)
+        .attr("y", 0 + top_offset)
+        .attr("font-size", "20px")
+        .attr("fill", "black")
+        .text("Your caption goes here. | | | | Your caption goes here. | Your caption goes here.")
+        .call(wrap, right_offset);
+
+    var bbox = caption.node().getBBox();
+    var padding = 10;
+    svg.insert("rect", "#caption1")
+        .attr("x", bbox.x - padding)
+        .attr("y", bbox.y - padding)
+        .attr("width", bbox.width + padding + padding)
+        .attr("height", bbox.height + padding + padding)
+        .attr("fill", "white")
+        .attr("filter", "url(#shadow)");
 }
 
 function shortest_path(name1, name2, G, svg) {
@@ -260,6 +389,7 @@ function shortest_path(name1, name2, G, svg) {
 function graph_reset(svg) {
     svg.selectAll(".node").select("circle").style("stroke-width", "0px");
     svg.selectAll(".node").select("text").remove();
+    svg.selectAll(".node").select("rect").remove();
     svg.selectAll(".link")
         .style("stroke-width", 1)
         .style("stroke", "#C2C2C2");

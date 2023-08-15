@@ -11,7 +11,7 @@
       <div id="main-form" class="accordion open">
         <p class="formHeading">Network map</p>
         <div class="panel" id="forceIndivSearch" style="float:left; padding-right:40px;">
-          </p><p class="panelHeading">Search for an interaction</p>
+          <p class="panelHeading">Search for an interaction</p>
           <form class="panelForm">
             Individual 1<br>
             <input class="inputText" type="text" name="indiv1" id="indiv1Input" onkeydown="if (event.keyCode === 13) updateSearchIndivs();"><br>
@@ -36,28 +36,6 @@
             <input class="inputText" type="text" name="startYear" id="startYearInput_line" onkeydown="if (event.keyCode === 13) update();"><br>
             <button type="button" class="updateButton" onclick="update();">Update</button>
           </form>
-          <p class="panelHeading">Choose a statistic</p>
-          <select class="select" id="lineTypeInput" onchange="update();">
-            <option value="">---</option>
-            <option value="GCC Percentage">GCC percentage</option>
-            <option value="Degree">Individual degree</option>
-            <option value="Betweenness">Individual betweenness</option>
-          </select>
-          <div id="lineTypeIndivSearch" style="display: none;">
-            <p class="spacing">
-            </p><p class="panelHeading">Choose up to four individuals</p>
-            <form class="panelForm">
-              Individual 1<br>
-              <input class="inputText" type="text" name="indiv1" id="indivLine1Input" onkeydown="if (event.keyCode === 13) update();"><br>
-              Individual 2<br>
-              <input class="inputText" type="text" name="indiv2" id="indivLine2Input" onkeydown="if (event.keyCode === 13) update();"><br>
-              Individual 3<br>
-              <input class="inputText" type="text" name="indiv2" id="indivLine3Input" onkeydown="if (event.keyCode === 13) update();"><br>
-              Individual 4<br>
-              <input class="inputText" type="text" name="indiv2" id="indivLine4Input" onkeydown="if (event.keyCode === 13) update();"><br>
-              <button type="button" class="updateButton" onclick="update();">Update</button>
-            </form>
-          </div>
         </div>
       </div>
     </div>
@@ -76,6 +54,18 @@
       window.onload = function() {
           update();
       };
+
+      function debounce(func, wait) {
+          let timeout;
+          return function() {
+              clearTimeout(timeout);
+              timeout = setTimeout(func, wait);
+          };
+      }
+      window.addEventListener('resize', debounce(function() {
+          update();
+      }, 250));
     </script>
 
-</body></html>
+  </body>
+</html>
