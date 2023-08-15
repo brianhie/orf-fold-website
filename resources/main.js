@@ -60,12 +60,10 @@ function updateSearchIndivs() {
         graph_reset(svg_graph);
         return;
     }
-    if (indiv1Str === "" && indiv2Str !== "") {
-        indiv1Str = indiv2Str;
-        indiv2Str = "";
-    }
-    if (indiv2Str === "") {
+    if (indiv1Str !== "" && indiv2Str === "") {
         search_name(indiv1Str, G, svg_graph);
+    } else if (indiv1Str === "" && indiv2Str !== "") {
+        search_name(indiv2Str, G, svg_graph);
     } else {
         shortest_path(indiv1Str, indiv2Str, G, svg_graph);
     }
@@ -86,16 +84,35 @@ function renderGraph() {
             G = new jsnx.Graph();
             for (var n in graph_json.nodes) {
                 var node = graph_json.nodes[n];
-                G.addNode(node.id, { 'name':node.name, 'role':node.role, 'score':node.score });
+                G.addNode(node.id, {
+                    'name': node.name,
+                    'role': node.role,
+                    'score': node.score,
+                    'UniProt ID': node.uniprot_id,
+                    //'pident': node.pident,
+                    'E-value': node.evalue,
+                });
             }
             for (var e in graph_json.links) {
                 var edge = graph_json.links[e];
                 var source = graph_json.nodes[edge.source];
                 var target = graph_json.nodes[edge.target];
-                G.addEdge(source.id, target.id);
+                G.addEdge(source.id, target.id, {
+                    "AF-Multimer pDockQ": edge.alphafold_pdockq,
+                    "ESMFold pDockQ": edge.esmfold_pdockq,
+                });
             }
             clearChart();
             svg_graph = draw_force_graph(graph_json);
+
+            const svgElement = document.querySelector('svg');
+            svgElement.addEventListener("click", function(event) {
+                if (event.target === svgElement) {
+                    graph_reset(svg_graph);
+                    document.getElementById("indiv1Input").value = "";
+                    document.getElementById("indiv2Input").value = "";
+                }
+            });
         }
     };
     xmlhttp.open("GET", "https://gist.githubusercontent.com/brianhie/8b1c8ff22fe55718987cdea34f408049/raw/b3e909745d40ae654c818c761b2cf0e8f987e2d5/orffold_visualization.json", true);

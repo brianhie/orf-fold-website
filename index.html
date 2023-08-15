@@ -10,12 +10,12 @@
     <div id="shakeosphere_form">
       <div id="main-form" class="accordion open">
         <p class="formHeading">Network map</p>
-        <div class="panel" id="forceIndivSearch" style="float:left; padding-right:40px;">
+        <div class="panel" id="forceIndivSearch">
           <p class="panelHeading">Search for an interaction</p>
           <form class="panelForm">
-            Individual 1<br>
+            <p class="panelFormHeader">Unknown protein:</p>
             <input class="inputText" type="text" name="indiv1" id="indiv1Input" onkeydown="if (event.keyCode === 13) updateSearchIndivs();"><br>
-            Individual 2<br>
+            <p class="panelFormHeader">Known protein:</p>
             <input class="inputText" type="text" name="indiv2" id="indiv2Input" onkeydown="if (event.keyCode === 13) updateSearchIndivs();"><br>
             <button type="button" class="updateButton" onclick="updateSearchIndivs();">Search</button>
           </form>
@@ -23,18 +23,20 @@
       </div>
 
       <div id="parameters" class="accordion close">
-        <p class="formHeading accordionHeading">Additional parameters</p>
+        <input class="toggle-inbox" id="_1" type="checkbox">
+        <label class="label formHeading accordionHeading" for="_1">
+          Additional filters
+        </label>
         <div class="panel" id="chooseLineType">
-          <p class="panelHeading">Filter the graph</p>
           <form class="panelForm">
-            E-value cutoff<br>
+            <p class="panelFormHeader">Minimum E-value</p>
             <input class="inputText" type="text" name="startYear" id="startYearInput_line" onkeydown="if (event.keyCode === 13) update();"><br>
-            <button type="button" class="updateButton" onclick="update();">Update</button>
+            <button type="button" class="updateButton" onclick="update();">Apply</button>
           </form>
           <form class="panelForm">
-            pDockQ<br>
+            <p class="panelFormHeader">Minimum AF-Multimer pDockQ</p>
             <input class="inputText" type="text" name="startYear" id="startYearInput_line" onkeydown="if (event.keyCode === 13) update();"><br>
-            <button type="button" class="updateButton" onclick="update();">Update</button>
+            <button type="button" class="updateButton" onclick="update();">Apply</button>
           </form>
         </div>
       </div>
@@ -65,6 +67,7 @@
       window.addEventListener('resize', debounce(function() {
           update();
       }, 250));
+
     </script>
 
   </body>

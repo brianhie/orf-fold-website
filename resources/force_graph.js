@@ -1,7 +1,8 @@
 /* Global variables. */
-var no_highlight = false;
+var curr_global_offset = 40;
 var keep_on_text = [];
 var keep_on_circle = [];
+var no_highlight = false;
 
 function color(role) {
     if (role === 1 || role === "OpenProt") {
@@ -14,6 +15,41 @@ function color(role) {
     }
 }
 
+function three_dec(value) {
+    if (typeof value !== 'number' || isNaN(value)) {
+        return value;
+    }
+    return parseFloat(value.toFixed(3)).toString();
+}
+
+function object_to_string(obj) {
+    let result = '';
+    if ("name" in obj) {
+        is_openprot = obj["name"].startsWith("IP_");
+    } else{
+        is_openprot = false;
+    }
+    for (let key in obj) {
+        if (obj[key] === null) {
+            continue;
+        } else if (key === "role" || key === "score") {
+            continue;
+        }
+
+        if (key === "name") {
+            result += `*${obj[key]} || `
+        } else if (is_openprot && key === "UniProt ID") {
+            result += `Closest UniProt ID: ${obj[key]} | `;
+        } else if (key.includes("pDockQ")){
+            result += `${key}: ${three_dec(obj[key])} | `;
+        } else {
+            result += `${key}: ${obj[key]} | `;
+        }
+
+    }
+    return result;
+}
+
 function wrap(text, width) {
     text.each(function () {
         var text = d3.select(this),
@@ -22,6 +58,8 @@ function wrap(text, width) {
             line = [],
             lineNumber = 0,
             lineHeight = 1.1, // ems
+            isBold = false,
+            isRed = false,
             x = text.attr("x"),
             y = text.attr("y"),
             dy = 0, //parseFloat(text.attr("dy")),
@@ -29,23 +67,50 @@ function wrap(text, width) {
                         .append("tspan")
                         .attr("x", x)
                         .attr("y", y)
-                        .attr("dy", dy + "em");
+                        .attr("dy", dy + "em")
+                        .attr("font-size", "16px");
+
         while (word = words.pop()) {
+            dy = 0;
+            if (word.startsWith("*")) {
+                word = word.slice(1);
+                isBold = true;
+            }
+            if (word.startsWith("!")) {
+                word = word.slice(1);
+                isRed = true;
+            }
             line.push(word);
             tspan.text(line.join(" "));
-            if (tspan.node().getComputedTextLength() > width || word === "|") {
+            if (isBold) {
+                tspan.attr("font-weight", "bold");
+                tspan.attr("font-size", "18px");
+                isBold = false;
+            }
+            if (isRed) {
+                tspan.attr("fill", "#990000");
+                isRed = false;
+            }
+            if (tspan.node().getComputedTextLength() > width ||
+                word === "|" ||
+                word === "||")
+            {
                 line.pop();
                 tspan.text(line.join(" "));
                 if (word === "|") {
                     line = [];
+                } else if (word === "||") {
+                    line = [];
+                    lineNumber++;
                 } else {
                     line = [word];
                 }
                 tspan = text.append("tspan")
-                            .attr("x", x)
-                            .attr("y", y)
-                            .attr("dy", ++lineNumber * lineHeight + dy + "em")
-                            .text(word);
+                    .attr("x", x)
+                    .attr("y", y)
+                    .attr("dy", ++lineNumber * lineHeight + dy + "em")
+                    .attr("font-size", "16px");
+                tspan.text(line.join(" "));
             }
         }
     });
@@ -113,7 +178,12 @@ function draw_force_graph(graph_json) {
         .call(force.drag().on("dragstart", dragstart))
         .call(force.drag().on("dragend", dragend))
         .on("click", function(d) {
-            search_name(d.name, G, svg_graph);
+            if (d.name.startsWith("IP_")) {
+                document.getElementById("indiv1Input").value = d.name;
+            } else {
+                document.getElementById("indiv2Input").value = d.name;
+            }
+            updateSearchIndivs();
         })
         .on("mouseover", function(d) {
             if (keep_on_text.indexOf(d.id) !== -1 || no_highlight) {
@@ -207,7 +277,7 @@ function draw_force_graph(graph_json) {
             .attr("y", function(d) { return d.y - 2; });
     });
 
-    for (var i = 0; i < 200; i++) {
+    for (var i = 0; i < 300; i++) {
         force.tick();
     }
     force.stop();
@@ -228,10 +298,21 @@ function name_to_id(name, G) {
     for (var n in nodes) {
         var data = nodes[n][1];
         if (strip_name(data.name) === strip_name(name)) {
-            return nodes[n][0];
+            return [ nodes[n][0], data ];
         }
     }
-    return null;
+    return [ null, null ];
+}
+
+function id_to_name(id, G) {
+    var nodes = G.nodes(true);
+    for (var n in nodes) {
+        if (nodes[n][0] === id) {
+            var data = nodes[n][1];
+            return [ strip_name(data.name), data ];
+        }
+    }
+    return [ null, null ];
 }
 
 function label_nodes(svg, filter_fn, text_on) {
@@ -287,12 +368,51 @@ function label_links(svg, filter_fn) {
         .moveToFront();
 }
 
+function draw_infobox_node(svg, caption_text) {
+    var filter = svg.append("defs")
+        .append("filter")
+        .attr("id", "shadow")
+        .append("feDropShadow")
+        .attr("dx", 1)    // Offset of the shadow in the x direction
+        .attr("dy", 1)    // Offset in the y direction
+        .attr("stdDeviation", 2); // Blur amount
+
+    var top_offset = 40;
+    var right_offset = 250;
+    var padding = 10;
+    var caption = svg.append("text")
+        .attr("id", "caption_infobox")
+        .attr("x", +svg.attr("width") - right_offset - padding)
+        .attr("y", curr_global_offset + padding)
+        .attr("fill", "black")
+        .text(caption_text)
+        .call(wrap, right_offset);
+
+    var bbox = caption.node().getBBox();
+    var rect = svg.insert("rect", "#caption_infobox")
+        .attr("id", "rect_infobox")
+        .attr("x", bbox.x - padding)
+        .attr("y", bbox.y - padding)
+        .attr("width", bbox.width + 2 * padding)
+        .attr("height", bbox.height + 2 * padding)
+        .attr("fill", "white")
+        .attr("filter", "url(#shadow)");
+
+    // Make box right-justified.
+    bbox = rect.node().getBBox();
+    offset = +svg.attr("width") - (bbox.x + bbox.width) - padding;
+    rect.attr("x", bbox.x + offset);
+    caption.selectAll("tspan").attr("x", bbox.x + offset + padding);
+
+    curr_global_offset += bbox.height + padding;
+}
+
 function search_name(name, G, svg) {
     if (svg === null) {
         return;
     }
     graph_reset(svg);
-    var id = name_to_id(name, G);
+    var [ id, data ] = name_to_id(name, G);
     if (id === null) {
         alert("Could not find " + name + " in graph.");
         return;
@@ -313,34 +433,14 @@ function search_name(name, G, svg) {
         return id === d.id;
     }, true);
 
-    var filter = svg.append("defs")
-        .append("filter")
-        .attr("id", "shadow")
-        .append("feDropShadow")
-        .attr("dx", 1)    // Offset of the shadow in the x direction
-        .attr("dy", 1)    // Offset in the y direction
-        .attr("stdDeviation", 2); // Blur amount
+    draw_infobox_node(
+        svg,
+        object_to_string(data),
+    );
+}
 
-    var top_offset = 40;
-    var right_offset = 150;
-    var caption = svg.append("text")
-        .attr("id", "caption1")
-        .attr("x", +svg.attr("width") - right_offset - 10)
-        .attr("y", 0 + top_offset)
-        .attr("font-size", "20px")
-        .attr("fill", "black")
-        .text("Your caption goes here. | | | | Your caption goes here. | Your caption goes here.")
-        .call(wrap, right_offset);
-
-    var bbox = caption.node().getBBox();
-    var padding = 10;
-    svg.insert("rect", "#caption1")
-        .attr("x", bbox.x - padding)
-        .attr("y", bbox.y - padding)
-        .attr("width", bbox.width + padding + padding)
-        .attr("height", bbox.height + padding + padding)
-        .attr("fill", "white")
-        .attr("filter", "url(#shadow)");
+function get_edge_data(id1, id2) {
+    return edgeData;
 }
 
 function shortest_path(name1, name2, G, svg) {
@@ -353,11 +453,11 @@ function shortest_path(name1, name2, G, svg) {
         search_name(name1, G, svg);
         return;
     }
-    var id1 = name_to_id(name1, G);
+    var [ id1, data1 ] = name_to_id(name1, G);
     if (id1 === null) {
         alert("Could not find " + name1 + " in graph.");
     }
-    var id2 = name_to_id(name2, G);
+    var [ id2, data2 ] = name_to_id(name2, G);
     if (id2 === null) {
         alert("Could not find " + name2 + " in graph.");
     }
@@ -365,25 +465,60 @@ function shortest_path(name1, name2, G, svg) {
         return (id1 === d.id) || (id2 === d.id);
     }, true);
 
-    var path = jsnx.shortestPath(G, { source: id1, target: id2 });
-    var filter_node_fn = function(d) {
-        for (var p in path) {
-            var id = path[p];
-            if (id === d.id) {
-                return true;
+    try {
+        var path = jsnx.shortestPath(G, { source: id1, target: id2 });
+        var filter_node_fn = function(d) {
+            for (var p in path) {
+                var id = path[p];
+                if (id === d.id) {
+                    return true;
+                }
             }
+            return false;
+        };
+        var filter_link_fn = function(d) {
+            var link_id = d3.select(this).attr("id");
+            var link_list = link_id.split("-");
+            var id1 = parseInt(link_list[0]);
+            var id2 = parseInt(link_list[1]);
+            return ((path.indexOf(id1) != -1) && (path.indexOf(id2) != -1));
         }
-        return false;
-    };
-    var filter_link_fn = function(d) {
-        var link_id = d3.select(this).attr("id");
-        var link_list = link_id.split("-");
-        var id1 = parseInt(link_list[0]);
-        var id2 = parseInt(link_list[1]);
-        return ((path.indexOf(id1) != -1) && (path.indexOf(id2) != -1));
+
+        if (path.length === 2) {
+            label_links(svg, filter_link_fn);
+            label_nodes(svg, filter_node_fn, false);
+
+            var edge_data = G.getEdgeData(id1, id2);
+            draw_infobox_node(
+                svg,
+                `*${name1} *<> *${name2} || ` + object_to_string(edge_data),
+            );
+        } else {
+            draw_infobox_node(
+                svg,
+                `*${name1} *<> *${name2} || !No !interaction !found`,
+            );
+        }
+
+    } catch (error) {
+        if (error.name === 'JSNetworkXNoPath') {
+            draw_infobox_node(
+                svg,
+                `*${name1} *<> *${name2} || !No !interaction !found`,
+            );
+        } else {
+            throw error;
+        }
     }
-    label_links(svg, filter_link_fn);
-    label_nodes(svg, filter_node_fn, false);
+
+    draw_infobox_node(
+        svg,
+        object_to_string(data1),
+    );
+    draw_infobox_node(
+        svg,
+        object_to_string(data2),
+    );
 }
 
 function graph_reset(svg) {
@@ -393,6 +528,10 @@ function graph_reset(svg) {
     svg.selectAll(".link")
         .style("stroke-width", 1)
         .style("stroke", "#C2C2C2");
+
+    d3.selectAll("#caption_infobox").remove();
+    d3.selectAll("#rect_infobox").remove();
+    curr_global_offset = 30;
 
     keep_on_text = [];
     keep_on_circle = []

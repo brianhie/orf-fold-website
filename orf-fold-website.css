@@ -1,63 +1,58 @@
 body {
     font-weight: normal;
-    font-size: 18px;
+    font-size: 16px;
     margin: 0px;
-    color: #222;
+    color: #ddd;
+    background-color: #f5f9fc;
 }
 
 #shakeosphere_form {
-    background-color: #eeeeee;
+    background-color: #3a3d45;
     padding: 0px;
     border: none;
     float: left;
-    width: 350px;
+    width: 300px;
     height: 100%;
     /*display: table;*/
-    font-family: Helvetica, Arial, sans-serif;
+    font-family: Consolas, sans-serif;
     overflow: auto;
 }
 
 #graph {
-    font-family: Helvetica, Arial, sans-serif;
-    font-size: 15px;
+    font-family: Consolas, sans-serif;
+    font-size: 16px;
 }
 
 .updateButton{
-    font-family: Helvetica, Arial, sans-serif;
-    padding: 10px;
-    background-color: #434D57;
-    color: #fff;
-    border: none;
+    font-family: Consolas, sans-serif;
+    padding: 15px 20px 15px 20px;
+    background-color: #3a3d45;
+    color: #ddd;
+    border: solid;
+    border-width: 1px;
+    border-color: #ddd;
     font-weight: normal;
-    font-size: 18px;
-    margin: 10px 0px 10px 0px;
+    font-size: 16px;
+    margin: 15px 0px 10px 0px;
     transition-duration: 0.2s;
 }
 
 .updateButton:hover {
-    background-color: #DB8F60;
-    border-color: #434D57;
-    color: black;
+    text-decoration: underline;
     cursor: pointer;
 }
 
 .inputText, .select  {
-    font-family: Helvetica, Arial, sans-serif;
-    font-size: 16px;
+    font-family: Consolas, sans-serif;
+    font-size: 14px;
     padding: 8px;
-    border: solid;
-    border-width: 1px;
+    border: none;
+    background-color: #eeeeee;
+    height: 28px;
 }
 
 .spacing {
     margin: 18px;
-}
-
-.formHeading {
-    padding: 20px;
-    margin: 0px;
-    font-size: 25px;
-    font-weight: bold;
 }
 
 .accordion{
@@ -68,11 +63,11 @@ body {
 }
 
 .formHeading{
-    font-size: 20px;
-    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
     margin: 0px 0px 0px 0px;
-    padding: 20px;
-    background: #434D57;
+    padding: 15px 20px 15px 20px;
+    background: #3a3d45;
     color: #ddd;
     width: 100%;
     box-sizing: border-box;
@@ -83,6 +78,11 @@ body {
     font-weight: normal;
 }
 
+.panelFormHeader {
+    margin-top: 10px;
+    margin-bottom: 6px;
+}
+
 .close .panel{
     height:0px;
     transform: scaleY(0);
@@ -91,8 +91,9 @@ body {
 }
 
 .open .panel{
-    padding: 20px;
-    background-color: #eeeeee;
+    float:left;
+    padding-left: 20px;
+    background-color: #3a3d45;
     width: 100%;
     margin: 0px 0px 0px 0px;
     display:block;
@@ -103,6 +104,35 @@ body {
 
 .accordionHeading:hover{
     margin:0px 0px 0px 0px;
-    background-color: #bdc3c7;
-    color: #2d333a;
+    background-color: #3a3d45;
+    color: #ddd;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.toggle-inbox {
+   display: none;
+}
+
+.toggle-inbox:checked ~ div#my {
+   display: block;
+}
+
+.label::after {
+   background-color: #3a3d45;
+   border-right: 3px solid #ddd;
+   border-bottom: 3px solid #ddd;
+   width: 10px;
+   display: inline-block;
+   height: 10px;
+   transform: rotate(45deg);
+   margin-top: 10px;
+   content: "";
+   margin-left: 5px;
+}
+
+.toggle-inbox:checked ~.label::after {
+   border-right: 3px solid #ddd;
+   border-bottom: 3px solid #ddd;
+   transform: rotate(-135deg);
 }
