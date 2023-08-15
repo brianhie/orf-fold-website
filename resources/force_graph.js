@@ -1,12 +1,9 @@
 function color(role) {
-    if (role === 1 || role === "author") {
-        return "#4F7590";
-    } else if (role === 2 || role === "printer") {
-        return "#FFDBAA";
-    } else if (role === 3 || role === "publisher") {
+    if (role === 1 || role === "OpenProt") {
         return "#D46A6A";
-    } else if (role === 4 || role === "bookseller") {
-        return "#8A458A";
+    } else if (role === 2 || role === "UniProt") {
+        return "#4F7590";
+        //return "#FFDBAA";
     } else {
         return "#000"
     }
@@ -65,9 +62,10 @@ function draw_force_graph(graph_json) {
         .attr("r", function(d) { return rScale(G.degree(d.id)); })
         .style("fill", function(d) { return color(d.role); })
         .call(force.drag().on("dragstart", dragstart))
-        .on("dblclick", function(d) { window.open("persons/person.jsp?pid=" + d.id,"_self");})
-        .on("mouseover", function(d)
-        {
+        .on("click", function(d) {
+            search_name(d.name, G, svg_graph);
+        })
+        .on("mouseover", function(d) {
             d3.select(this)
                 .style("stroke", "#000")
                 .style("stroke-width", "3px");
@@ -92,7 +90,7 @@ function draw_force_graph(graph_json) {
             }
         });
 
-    var roles = [ 'author', 'printer', 'publisher', 'bookseller' ];
+    var roles = [ 'OpenProt', 'UniProt' ];
     var legendRectSize = 18;
     var legendSpacing = 4;
     var legend = svg_graph.selectAll('.legend')
@@ -117,7 +115,7 @@ function draw_force_graph(graph_json) {
     legend.append('text')
         .attr('x', legendRectSize + legendSpacing)
         .attr('y', legendRectSize - legendSpacing)
-        .text(function(d) { return toTitleCase(d); });
+        .text(function(d) { return d; });
 
     force.on("tick", function() {
         graph_link

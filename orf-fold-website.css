@@ -6,45 +6,43 @@ body {
 }
 
 #shakeosphere_form {
-    background-color: #FFE7D2;
+    background-color: #eeeeee;
     padding: 0px;
     border: none;
     float: left;
     width: 350px;
     height: 100%;
     /*display: table;*/
-    font-family: "Gill Sans", "Gill Sans MT", Arial, sans-serif;
+    font-family: Helvetica, Arial, sans-serif;
     overflow: auto;
 }
 
 #graph {
-    font-family: "Gill Sans", "Gill Sans MT", Arial, sans-serif;
+    font-family: Helvetica, Arial, sans-serif;
     font-size: 15px;
 }
 
 .updateButton{
-    font-family: "Gill Sans", "Gill Sans MT", Arial, sans-serif;
+    font-family: Helvetica, Arial, sans-serif;
     padding: 10px;
-    background-color: #904D13;
+    background-color: #434D57;
     color: #fff;
-    border-style: solid;
-    border-color: #FFE7D2;
+    border: none;
     font-weight: normal;
     font-size: 18px;
     margin: 10px 0px 10px 0px;
-    -webkit-transition-duration: 0.2s; /* Safari */
     transition-duration: 0.2s;
 }
 
 .updateButton:hover {
     background-color: #DB8F60;
-    border-color: #904D13;
+    border-color: #434D57;
     color: black;
     cursor: pointer;
 }
 
 .inputText, .select  {
-    font-family: "Gill Sans", "Gill Sans MT", Arial, sans-serif;
+    font-family: Helvetica, Arial, sans-serif;
     font-size: 16px;
     padding: 8px;
     border: solid;
@@ -56,10 +54,10 @@ body {
 }
 
 .formHeading {
-    font-weight: normal;
     padding: 20px;
     margin: 0px;
     font-size: 25px;
+    font-weight: bold;
 }
 
 .accordion{
@@ -69,12 +67,12 @@ body {
     box-sizing: border-box;
 }
 
-.accordionHeading{
+.formHeading{
     font-size: 20px;
     cursor: pointer;
     margin: 0px 0px 0px 0px;
     padding: 20px;
-    background: #904D13;
+    background: #434D57;
     color: #ddd;
     width: 100%;
     box-sizing: border-box;
@@ -87,10 +85,6 @@ body {
 
 .close .panel{
     height:0px;
-    transition:height 1s ease-out;
-    -webkit-transform: scaleY(0);
-    -o-transform: scaleY(0);
-    -ms-transform: scaleY(0);
     transform: scaleY(0);
     float:left;
     display:block;
@@ -98,27 +92,17 @@ body {
 
 .open .panel{
     padding: 20px;
-    background-color: #FFE7D2;
+    background-color: #eeeeee;
     width: 100%;
     margin: 0px 0px 0px 0px;
     display:block;
-    -webkit-transform: scaleY(1);
-    -o-transform: scaleY(1);
-    -ms-transform: scaleY(1);
     transform: scaleY(1);
-    -webkit-transform-origin: top;
-    -o-transform-origin: top;
-    -ms-transform-origin: top;
     transform-origin: top;
-    -webkit-transition: -webkit-transform 0.4s ease-out;
-    -o-transition: -o-transform 0.4s ease;
-    -ms-transition: -ms-transform 0.4s ease;
-    transition: transform 0.4s ease;
     box-sizing: border-box;
 }
 
 .accordionHeading:hover{
     margin:0px 0px 0px 0px;
     background-color: #bdc3c7;
-    color: #7f8c8d;
+    color: #2d333a;
 }
