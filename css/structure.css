@@ -1,0 +1,78 @@
+/* These two rules hide the Molstar display panel. */
+.msp-layout-left {
+    display: none;
+}
+.msp-layout-right {
+    display: none;
+}
+
+.myViewer{
+    float: left;
+    width: 50%;
+    max-width: 700px;
+    height: 400px;
+    margin-left: 10%;
+    margin-top: 100px;
+    margin-bottom: 300px;
+    position: relative;
+}
+
+body {
+    font-family: Consolas, monospace, monospace;
+    font-weight: normal;
+    font-size: 16px;
+    margin: 0px;
+    color: #111;
+    background-color: #f5f9fc;
+}
+
+#page-header {
+    margin-left: 10%;
+    margin-top: 70px;
+    margin-bottom: 10px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#page-header a {
+    color: #111;
+    text-decoration: none;
+}
+
+#page-header a:hover {
+    text-decoration: underline;
+}
+
+#structure-header {
+    margin-left: 10%;
+    font-size: 24px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+#uniprot-link {
+    color: #1338be;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+#uniprot-link:hover {
+    text-decoration: underline;
+}
+
+.download-button {
+    font-family: Consolas, monospace, monospace;
+    font-weight: normal;
+    font-size: 16px;
+    margin-left: 30px;
+    margin-bottom: 20px;
+    color: #111;
+    padding: 10px;
+    border-width: 1.5px;
+    background-color: white;
+}
+
+.download-button:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
