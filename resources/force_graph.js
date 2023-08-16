@@ -303,18 +303,6 @@ function name_to_id(name, G) {
     }
     return [ null, null ];
 }
-
-function id_to_name(id, G) {
-    var nodes = G.nodes(true);
-    for (var n in nodes) {
-        if (nodes[n][0] === id) {
-            var data = nodes[n][1];
-            return [ strip_name(data.name), data ];
-        }
-    }
-    return [ null, null ];
-}
-
 function label_nodes(svg, filter_fn, text_on) {
     var nodes = svg.selectAll(".node")
         .filter(filter_fn)
@@ -380,6 +368,7 @@ function draw_infobox_node(svg, caption_text) {
     var top_offset = 40;
     var right_offset = 250;
     var padding = 10;
+
     var caption = svg.append("text")
         .attr("id", "caption_infobox")
         .attr("x", +svg.attr("width") - right_offset - padding)
@@ -403,6 +392,63 @@ function draw_infobox_node(svg, caption_text) {
     offset = +svg.attr("width") - (bbox.x + bbox.width) - padding;
     rect.attr("x", bbox.x + offset);
     caption.selectAll("tspan").attr("x", bbox.x + offset + padding);
+
+    curr_global_offset += bbox.height + padding;
+}
+
+function draw_infobox_edge(svg, name1, name2, data1, data2, caption_text) {
+    console.log("here!!!");
+
+    var filter = svg.append("defs")
+        .append("filter")
+        .attr("id", "shadow")
+        .append("feDropShadow")
+        .attr("dx", 1)    // Offset of the shadow in the x direction
+        .attr("dy", 1)    // Offset in the y direction
+        .attr("stdDeviation", 2); // Blur amount
+
+    var top_offset = 40;
+    var right_offset = 250;
+    var padding = 10;
+
+    var url = `/structure.html?protein_A=${name1}&protein_B_uniprot=${data2["UniProt ID"]}&protein_B=${name2}`
+    var download_link = svg.append("a")
+        .attr("id", "download_infobox")
+        .attr("xlink:href", url)
+        .moveToFront(); // You can use .attr("xlink:href", url) if needed
+
+    var download_text = download_link.append("text")
+        .attr("x", +svg.attr("width") - right_offset - padding)
+        .attr("y", curr_global_offset + padding)
+        .attr("fill", "blue")
+        .attr("class", "download-link")
+        .text("View structure");
+    var bbox_download = download_link.node().getBBox();
+
+    var caption = svg.append("text")
+        .attr("id", "caption_infobox")
+        .attr("x", +svg.attr("width") - right_offset - padding)
+        .attr("y", curr_global_offset + padding + 20)
+        .attr("fill", "black")
+        .text(caption_text)
+        .call(wrap, right_offset);
+    var bbox = caption.node().getBBox();
+
+    var rect = svg.insert("rect", "#download_infobox")
+        .attr("id", "rect_infobox")
+        .attr("x", bbox_download.x - padding)
+        .attr("y", bbox_download.y - padding)
+        .attr("width", bbox.width + 2 * padding)
+        .attr("height", bbox.height + 2 * padding + 20)
+        .attr("fill", "white")
+        .attr("filter", "url(#shadow)");
+
+    // Make box right-justified.
+    bbox = rect.node().getBBox();
+    offset = +svg.attr("width") - (bbox.x + bbox.width) - padding;
+    rect.attr("x", bbox.x + offset);
+    caption.selectAll("tspan").attr("x", bbox.x + offset + padding);
+    download_text.attr("x", bbox.x + offset + padding);
 
     curr_global_offset += bbox.height + padding;
 }
@@ -489,8 +535,12 @@ function shortest_path(name1, name2, G, svg) {
             label_nodes(svg, filter_node_fn, false);
 
             var edge_data = G.getEdgeData(id1, id2);
-            draw_infobox_node(
+            draw_infobox_edge(
                 svg,
+                name1,
+                name2,
+                data1,
+                data2,
                 `*${name1} *<> *${name2} || ` + object_to_string(edge_data),
             );
         } else {
@@ -529,6 +579,7 @@ function graph_reset(svg) {
         .style("stroke-width", 1)
         .style("stroke", "#C2C2C2");
 
+    d3.selectAll("#download_infobox").remove();
     d3.selectAll("#caption_infobox").remove();
     d3.selectAll("#rect_infobox").remove();
     curr_global_offset = 30;

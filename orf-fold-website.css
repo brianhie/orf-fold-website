@@ -136,3 +136,12 @@ body {
    border-bottom: 3px solid #ddd;
    transform: rotate(-135deg);
 }
+
+.download-link {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.download-link:hover {
+    text-decoration: underline;
+}

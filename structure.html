@@ -12,8 +12,8 @@
       .myViewer{
         float: left;
         width: 50%;
-        max-width: 500px;
-        height: 300px;
+        max-width: 700px;
+        height: 400px;
         margin-left: 10%;
         margin-top: 100px;
         position: relative;
@@ -50,7 +50,7 @@
 
       params = getURLParameters(window.location.href);
       var header = document.getElementById('header');
-      header.innerText = `${params.protein_A} <> ${params.protein_B}`;
+      header.innerHTML = `${params.protein_A} <> ${params.protein_B} (UniProt: <a href="https://www.uniprot.org/uniprotkb/${params.protein_B_uniprot}/entry">${params.protein_B_uniprot}</a>)`;
       var pdb_url = `https://raw.githubusercontent.com/brianhie/orf-fold-website/main/data/pdbs/af-multimer/${params.protein_A}_${params.protein_B_uniprot}.pdb`;
 
       var viewerContainer = document.getElementById('myViewer');
