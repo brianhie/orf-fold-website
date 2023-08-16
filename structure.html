@@ -1,22 +1,112 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
-    <meta charset="UTF-8">
-    <title>ORFFold | View structure</title>
-    <link rel="stylesheet" type="text/css" href="orf-fold-website.css">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>PDBe Molstar - Basic</title>
+
+    <!-- Molstar CSS & JS -->
+    <link rel="stylesheet" type="text/css" href="https://www.ebi.ac.uk/pdbe/pdb-component-library/css/pdbe-molstar-3.1.2.css">
+    <script type="text/javascript" src="https://www.ebi.ac.uk/pdbe/pdb-component-library/js/pdbe-molstar-plugin-3.1.2.js"></script>
+    <style>
+      .myViewer{
+        float: left;
+        width: 50%;
+        max-width: 500px;
+        height: 300px;
+        margin-left: 10%;
+        margin-top: 100px;
+        position: relative;
+      }
+
+      .msp-layout-left {
+          display: none;
+      }
+      .msp-layout-right {
+          display: none;
+      }
+    </style>
   </head>
 
   <body>
 
-    <script src="resources/3dmol.org_build_3Dmol.ui-min.js"></script>
-    <script src="resources/3dmol.org_build_3Dmol-min.js"></script>
+    <p id="header"></p>
 
-    <div style="height: 400px; width: 400px; position: relative;"
-         class='viewer_3Dmoljs'
-         data-pdb='2POR'
-         data-backgroundcolor='0xffffff'
-         data-style='stick'
-         data-ui='true'>
-    </div>   
-    
+    <!-- Molstar container -->
+    <div id="myViewer" class="myViewer"></div>
+
+    <button id="downloadStructureButton">Download structure</button>
+    <button id="downloadSequenceButton">Download sequence</button>
+
+    <script>
+      function getURLParameters(url) {
+          const params = new URL(url).searchParams;
+          const paramsObject = {};
+          for (let [key, value] of params.entries()) {
+              paramsObject[key] = value;
+          }
+          return paramsObject;
+      }
+
+      params = getURLParameters(window.location.href);
+      var header = document.getElementById('header');
+      header.innerText = `${params.protein_A} <> ${params.protein_B}`;
+      var pdb_url = `https://raw.githubusercontent.com/brianhie/orf-fold-website/main/data/pdbs/af-multimer/${params.protein_A}_${params.protein_B_uniprot}.pdb`;
+
+      var viewerContainer = document.getElementById('myViewer');
+      viewerInstance = new PDBeMolstarPlugin();
+
+      function render() {
+          var options = {
+              customData: {
+                  url: pdb_url,
+                  format: 'pdb',
+              },
+              alphafoldView: false,
+              bgColor: {r:255, g:255, b:255},
+              sequencePanel: true
+          };
+          viewerInstance.render(viewerContainer, options);
+      }
+      render();
+
+      function addDownloadListener(id, fetch_url, filename) {
+          var button = document.getElementById(id);
+          button.addEventListener('click', async function() {
+              try {
+                  const response = await fetch(fetch_url);
+                  if (!response.ok) {
+                      throw new Error('Network response was not ok');
+                  }
+                  const blob = await response.blob();
+                  const url = URL.createObjectURL(blob);
+
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = filename;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+
+                  URL.revokeObjectURL(url);
+              } catch (error) {
+                  console.error('There was a problem with the fetch operation:', error.message);
+              }
+          });
+      }
+
+      addDownloadListener(
+          'downloadStructureButton',
+          pdb_url,
+          `${params.protein_A}_${params.protein_B_uniprot}.pdb`
+      );
+      addDownloadListener(
+          'downloadSequenceButton',
+          `https://raw.githubusercontent.com/brianhie/orf-fold-website/main/data/fastas/${params.protein_A}_${params.protein_B_uniprot}.fasta`,
+          `${params.protein_A}_${params.protein_B_uniprot}.fasta`
+      );
+
+    </script>
   </body>
+
 </html>

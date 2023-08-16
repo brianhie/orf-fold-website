@@ -5,9 +5,9 @@ var keep_on_circle = [];
 var no_highlight = false;
 
 function color(role) {
-    if (role === 1 || role === "OpenProt") {
+    if (role === 1 || role === "Unknown protein") {
         return "#D46A6A";
-    } else if (role === 2 || role === "UniProt") {
+    } else if (role === 2 || role === "Known protein") {
         return "#4F7590";
         //return "#FFDBAA";
     } else {
@@ -234,7 +234,7 @@ function draw_force_graph(graph_json) {
             }
         });
 
-    var roles = [ 'OpenProt', 'UniProt' ];
+    var roles = [ 'Unknown protein', 'Known protein' ];
     var legendRectSize = 18;
     var legendSpacing = 4;
     var legend = svg_graph.selectAll('.legend')
