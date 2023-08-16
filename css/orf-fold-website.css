@@ -7,6 +7,7 @@ body {
 }
 
 #shakeosphere_form {
+    position:relative;
     background-color: #3a3d45;
     padding: 0px;
     border: none;
@@ -144,4 +145,15 @@ body {
 
 .download-link:hover {
     text-decoration: underline;
+}
+
+.evodesign-logo {
+    position: absolute;
+    bottom: 20px;
+    left: 18px;
+}
+
+.evodesign-logo img {
+    width: 60px;
+    height: auto;
 }
