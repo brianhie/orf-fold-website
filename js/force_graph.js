@@ -397,8 +397,6 @@ function draw_infobox_node(svg, caption_text) {
 }
 
 function draw_infobox_edge(svg, name1, name2, data1, data2, caption_text) {
-    console.log("here!!!");
-
     var filter = svg.append("defs")
         .append("filter")
         .attr("id", "shadow")

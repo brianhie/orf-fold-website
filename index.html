@@ -1,7 +1,7 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>ORFFold</title>
+    <title>Interactome</title>
     <link rel="stylesheet" type="text/css" href="css/orf-fold-website.css">
   </head>
 
@@ -47,29 +47,10 @@
 
     <script src="js/jsnetworkx.js"></script>
     <script src="js/d3.v3.min.js"></script>
-    <script src="js/force_graph.js"></script>
-    <script src="js/line_chart.js"></script>
     <script src="js/spin.min.js"></script>
     <script src="js/d3.legend.js"></script>
 
+    <script src="js/force_graph.js"></script>
     <script src="js/main.js"></script>
-    <script>
-      window.onload = function() {
-          update();
-      };
-
-      function debounce(func, wait) {
-          let timeout;
-          return function() {
-              clearTimeout(timeout);
-              timeout = setTimeout(func, wait);
-          };
-      }
-      window.addEventListener('resize', debounce(function() {
-          update();
-      }, 250));
-
-    </script>
-
   </body>
 </html>

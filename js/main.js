@@ -1,27 +1,55 @@
 var G = null;
 var svg_graph = null;
 
-var accItem = document.getElementsByClassName('accordion');
-var accHD = document.getElementsByClassName('accordionHeading');
+function getURLParameters(url) {
+    const params = new URL(url).searchParams;
+    const paramsObject = {};
+    for (let [key, value] of params.entries()) {
+        paramsObject[key] = value;
+    }
+    return paramsObject;
+}
+params = getURLParameters(window.location.href);
+
+window.onload = function() {
+    document.getElementById("indiv1Input").value = params.protein_A ? params.protein_A : "";
+    document.getElementById("indiv2Input").value = params.protein_B ? params.protein_B : "";
+
+    update();
+};
+
+function debounce(func, wait) {
+    let timeout;
+    return function() {
+        clearTimeout(timeout);
+        timeout = setTimeout(func, wait);
+    };
+}
+window.addEventListener("resize", debounce(function() {
+    update();
+}, 250));
+
+var accItem = document.getElementsByClassName("accordion");
+var accHD = document.getElementsByClassName("accordionHeading");
 for (var i = 0; i < accHD.length; i++) {
-    accHD[i].addEventListener('click', toggleItem, false);
+    accHD[i].addEventListener("click", toggleItem, false);
 }
 function toggleItem() {
     var itemClass = this.parentNode.className;
     for (var i = 0; i < accItem.length; i++) {
-        if (accItem[i].id === 'main-form') {
+        if (accItem[i].id === "main-form") {
             continue;
         }
-        accItem[i].className = 'accordion close';
+        accItem[i].className = "accordion close";
     }
-    if (itemClass === 'accordion close') {
-        this.parentNode.className = 'accordion open';
+    if (itemClass === "accordion close") {
+        this.parentNode.className = "accordion open";
     }
 }
 
 function currVisualization() {
     for (var i = 0; i < accHD.length; i++) {
-        if (accItem[i].className === 'accordion open') {
+        if (accItem[i].className === "accordion open") {
             return accItem[i].id;
         }
     }
@@ -37,27 +65,40 @@ function clearChart() {
     document.getElementById("graph").innerHTML = "";
 }
 
+function checkFloat(id) {
+    var value = document.getElementById(id).value;
+    if (value === "") {
+        return true;
+    }
+    return !isNaN(parseFloat(value)) && isFinite(value);
+}
+
 function updateFilter() {
+    if (!checkFloat("af2-pdockq-cutoff")) {
+        alert("pDockQ cutoff is not valid.");
+        return;
+    }
+    if (!checkFloat("evalue-cutoff")) {
+        alert("E-value cutoff is not valid.");
+        return;
+    }
+
     document.getElementById("indiv1Input").value = "";
     document.getElementById("indiv2Input").value = "";
 
-    updateVisualization();
+    update();
 }
 
 function update() {
-    updateVisualization();
-}
-
-function updateVisualization() {
     clearChart();
 
-    var target = document.getElementById('graph')
+    var target = document.getElementById("graph")
     var spinner = new Spinner().spin(target);
 
     renderGraph();
 }
 
-String.prototype.trim=function(){return this.replace(/^\s+|\s+$/g, '');};
+String.prototype.trim=function(){return this.replace(/^\s+|\s+$/g, "");};
 
 function updateSearchIndivs() {
     var indiv1Str = document.getElementById("indiv1Input").value.trim();
@@ -87,8 +128,6 @@ function renderGraph() {
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             var graph_json = JSON.parse(xmlhttp.responseText);
-            console.log(graph_json);
-
             G = new jsnx.Graph();
 
             var filtered_nodes = [];
@@ -137,12 +176,12 @@ function renderGraph() {
             for (var n in filtered_nodes) {
                 var node = filtered_nodes[n];
                 G.addNode(node.id, {
-                    'name': node.name,
-                    'role': node.role,
-                    'score': node.score,
-                    'UniProt ID': node.uniprot_id,
-                    'Sequence identity': node.pident,
-                    'E-value': node.evalue,
+                    "name": node.name,
+                    "role": node.role,
+                    "score": node.score,
+                    "UniProt ID": node.uniprot_id,
+                    "Sequence identity": node.pident,
+                    "E-value": node.evalue,
                 });
             }
 
@@ -151,19 +190,19 @@ function renderGraph() {
                 var source = filtered_nodes[edge.source];
                 var target = filtered_nodes[edge.target];
                 G.addEdge(source.id, target.id, {
-                    "AF-Multimer pDockQ": edge.alphafold_pdockq,
                     "ESMFold pDockQ": edge.esmfold_pdockq,
+                    "AF-Multimer pDockQ": edge.alphafold_pdockq,
                 });
             }
 
             clearChart();
 
             var filtered_json = {
-                'nodes': filtered_nodes, 'links': filtered_links
+                "nodes": filtered_nodes, "links": filtered_links
             };
             svg_graph = draw_force_graph(filtered_json);
 
-            const svgElement = document.querySelector('svg');
+            const svgElement = document.querySelector("svg");
             svgElement.addEventListener("click", function(event) {
                 if (event.target === svgElement) {
                     graph_reset(svg_graph);
@@ -171,6 +210,8 @@ function renderGraph() {
                     document.getElementById("indiv2Input").value = "";
                 }
             });
+
+            updateSearchIndivs();
         }
     };
     xmlhttp.open("GET", "https://gist.githubusercontent.com/brianhie/8b1c8ff22fe55718987cdea34f408049/raw/b3e909745d40ae654c818c761b2cf0e8f987e2d5/orffold_visualization.json", true);

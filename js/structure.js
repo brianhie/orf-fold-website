@@ -8,8 +8,8 @@ function getURLParameters(url) {
 }
 
 params = getURLParameters(window.location.href);
-var header = document.getElementById('header');
-header.innerHTML = `${params.protein_A} <> ${params.protein_B} (UniProt: <a href="https://www.uniprot.org/uniprotkb/${params.protein_B_uniprot}/entry">${params.protein_B_uniprot}</a>)`;
+var header = document.getElementById('structure-header');
+header.innerHTML = `<b>${params.protein_A}</b> <> <b>${params.protein_B}</b> (UniProt: <a id="uniprot-link" href="https://www.uniprot.org/uniprotkb/${params.protein_B_uniprot}/entry">${params.protein_B_uniprot}</a>)`;
 var pdb_url = `https://raw.githubusercontent.com/brianhie/orf-fold-website/main/data/pdbs/af-multimer/${params.protein_A}_${params.protein_B_uniprot}.pdb`;
 
 var viewerContainer = document.getElementById('myViewer');
@@ -63,4 +63,10 @@ addDownloadListener(
     'downloadSequenceButton',
     `https://raw.githubusercontent.com/brianhie/orf-fold-website/main/data/fastas/${params.protein_A}_${params.protein_B_uniprot}.fasta`,
     `${params.protein_A}_${params.protein_B_uniprot}.fasta`
+);
+
+document.getElementById('interactomeButton').addEventListener(
+    'click', function() {
+        window.location.href = `/index.html?protein_A=${params.protein_A}&protein_B=${params.protein_B}`;
+    }
 );

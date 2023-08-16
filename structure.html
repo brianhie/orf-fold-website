@@ -3,40 +3,34 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <title>PDBe Molstar - Basic</title>
+    <title>Interactome | Structure viewer</title>
 
     <!-- Molstar CSS & JS -->
-    <link rel="stylesheet" type="text/css" href="https://www.ebi.ac.uk/pdbe/pdb-component-library/css/pdbe-molstar-3.1.2.css">
-    <script type="text/javascript" src="https://www.ebi.ac.uk/pdbe/pdb-component-library/js/pdbe-molstar-plugin-3.1.2.js"></script>
-    <style>
-      .myViewer{
-        float: left;
-        width: 50%;
-        max-width: 700px;
-        height: 400px;
-        margin-left: 10%;
-        margin-top: 100px;
-        position: relative;
-      }
-
-      .msp-layout-left {
-          display: none;
-      }
-      .msp-layout-right {
-          display: none;
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" href="css/structure.css">
+    <link rel="stylesheet" type="text/css" href="css/pdbe-molstar-3.1.2.css">
+    <script type="text/javascript" src="js/pdbe-molstar-plugin-3.1.2.js"></script>
   </head>
 
   <body>
 
-    <p id="header"></p>
+    <p id="page-header"><a href="/index.html">Interactome</a></p>
+    <p id="structure-header"></p>
 
     <!-- Molstar container -->
     <div id="myViewer" class="myViewer"></div>
 
-    <button id="downloadStructureButton">Download structure</button>
-    <button id="downloadSequenceButton">Download sequence</button>
+    <button class="download-button" id="downloadStructureButton"
+            style="margin-top: 150px;">
+      Download structure
+    </button>
+    <br>
+    <button class="download-button" id="downloadSequenceButton">
+      Download sequence
+    </button>
+    <br>
+    <button class="download-button" id="interactomeButton">
+      View in interaction network
+    </button>
 
     <script src="js/structure.js"></script>
   </body>
