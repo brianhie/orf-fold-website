@@ -17,6 +17,13 @@
     position: relative;
 }
 
+@media (max-width: 768px) {
+    .myViewer {
+        margin-bottom: 0px;
+        width: 80%;
+    }
+}
+
 body {
     font-family: Consolas, monospace, monospace;
     font-weight: normal;
@@ -71,6 +78,23 @@ body {
     border-width: 1.5px;
     background-color: white;
 }
+
+@media (max-width: 768px) {
+    .download-button {
+        margin-left: 10%;
+    }
+}
+
+#downloadStructureButton {
+    margin-top: 150px;
+}
+
+@media (max-width: 768px) {
+    #downloadStructureButton {
+        margin-top: 20px;
+    }
+}
+
 
 .download-button:hover {
     cursor: pointer;
