@@ -118,9 +118,12 @@ function wrap(text, width) {
 
 function dragstart(d) {
     no_highlight = true;
+
     d3.select(this).classed("fixed", d.fixed = true);
     d3.select(this.nextSibling).remove();
     d3.select(this.nextSibling).remove();
+
+    d3.event.sourceEvent.stopPropagation();
 }
 
 function dragend(d) {
