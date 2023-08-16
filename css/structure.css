@@ -25,7 +25,7 @@
 }
 
 body {
-    font-family: Consolas, monospace, monospace;
+    font-family: Consolas, 'Roboto Mono', monospace, monospace;
     font-weight: normal;
     font-size: 16px;
     margin: 0px;
@@ -68,13 +68,13 @@ body {
 }
 
 .download-button {
-    font-family: Consolas, monospace, monospace;
+    font-family: Consolas, 'Roboto Mono', monospace, monospace;
     font-weight: normal;
     font-size: 16px;
     margin-left: 30px;
     margin-bottom: 20px;
     color: #111;
-    padding: 10px;
+    padding: 14px;
     border-width: 1.5px;
     background-color: white;
 }

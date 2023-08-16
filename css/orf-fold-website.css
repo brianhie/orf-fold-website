@@ -15,17 +15,17 @@ body {
     width: 290px;
     height: 100%;
     /*display: table;*/
-    font-family: Consolas, monospace, monospace;
+    font-family: Consolas, 'Roboto Mono', monospace, monospace;
     overflow: auto;
 }
 
 #graph {
-    font-family: Consolas, monospace, monospace;
+    font-family: Consolas, 'Roboto Mono', monospace, monospace;
     font-size: 16px;
 }
 
 .updateButton{
-    font-family: Consolas, monospace, monospace;
+    font-family: Consolas, 'Roboto Mono', monospace, monospace;
     padding: 12px 15px 12px 15px;
     background-color: #3a3d45;
     color: #ddd;
@@ -44,7 +44,7 @@ body {
 }
 
 .inputText, .select  {
-    font-family: Consolas, monospace, monospace;
+    font-family: Consolas, 'Roboto Mono', monospace, monospace;
     font-size: 14px;
     padding: 8px;
     border: none;
