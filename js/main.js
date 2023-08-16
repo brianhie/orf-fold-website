@@ -37,6 +37,13 @@ function clearChart() {
     document.getElementById("graph").innerHTML = "";
 }
 
+function updateFilter() {
+    document.getElementById("indiv1Input").value = "";
+    document.getElementById("indiv2Input").value = "";
+
+    updateVisualization();
+}
+
 function update() {
     updateVisualization();
 }

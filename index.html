@@ -2,7 +2,7 @@
   <head>
     <meta charset="UTF-8">
     <title>ORFFold</title>
-    <link rel="stylesheet" type="text/css" href="orf-fold-website.css">
+    <link rel="stylesheet" type="text/css" href="css/orf-fold-website.css">
   </head>
 
   <body>
@@ -30,14 +30,14 @@
         </label>
         <div class="panel" id="chooseLineType">
           <form class="panelForm" onsubmit="return false;">
-            <p class="panelFormHeader">Minimum E-value:</p>
-            <input class="inputText" type="text" id="evalue-cutoff" onkeydown="if (event.keyCode === 13) {update();}"><br>
-            <button type="button" class="updateButton" onclick="update();">Apply</button>
+            <p class="panelFormHeader">Minimum AF-Multimer pDockQ:</p>
+            <input class="inputText" type="text" id="af2-pdockq-cutoff" onkeydown="if (event.keyCode === 13) updateFilter();"><br>
+            <button type="button" class="updateButton" onclick="updateFilter();">Apply</button>
           </form>
           <form class="panelForm" onsubmit="return false;">
-            <p class="panelFormHeader">Minimum AF-Multimer pDockQ:</p>
-            <input class="inputText" type="text" id="af2-pdockq-cutoff" onkeydown="if (event.keyCode === 13) update();"><br>
-            <button type="button" class="updateButton" onclick="update();">Apply</button>
+            <p class="panelFormHeader">Minimum E-value:</p>
+            <input class="inputText" type="text" id="evalue-cutoff" onkeydown="if (event.keyCode === 13) {updateFilter();}"><br>
+            <button type="button" class="updateButton" onclick="updateFilter();">Apply</button>
           </form>
         </div>
       </div>
@@ -45,14 +45,14 @@
 
     <div id="graph" style="float:left;"><svg width="1161" height="295"></svg></div>
 
-    <script src="resources/jsnetworkx.js"></script>
-    <script src="resources/d3.v3.min.js"></script>
-    <script src="resources/force_graph.js"></script>
-    <script src="resources/line_chart.js"></script>
-    <script src="resources/spin.min.js"></script>
-    <script src="resources/d3.legend.js"></script>
+    <script src="js/jsnetworkx.js"></script>
+    <script src="js/d3.v3.min.js"></script>
+    <script src="js/force_graph.js"></script>
+    <script src="js/line_chart.js"></script>
+    <script src="js/spin.min.js"></script>
+    <script src="js/d3.legend.js"></script>
 
-    <script src="resources/main.js"></script>
+    <script src="js/main.js"></script>
     <script>
       window.onload = function() {
           update();
