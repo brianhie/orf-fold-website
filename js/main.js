@@ -179,6 +179,7 @@ function renderGraph() {
                     "name": node.name,
                     "role": node.role,
                     "score": node.score,
+                    "Sequence length": node.seq_len,
                     "UniProt ID": node.uniprot_id,
                     "Sequence identity": node.pident,
                     "E-value": node.evalue,
@@ -214,7 +215,7 @@ function renderGraph() {
             updateSearchIndivs();
         }
     };
-    xmlhttp.open("GET", "https://gist.githubusercontent.com/brianhie/8b1c8ff22fe55718987cdea34f408049/raw/b3e909745d40ae654c818c761b2cf0e8f987e2d5/orffold_visualization.json", true);
+    xmlhttp.open("GET", "https://raw.githubusercontent.com/brianhie/orf-fold-website/main/data/orffold_visualization.json", true);
     xmlhttp.send();
 }
 
