@@ -9,10 +9,10 @@
 
     <div id="shakeosphere_form">
       <div id="main-form" class="accordion open">
-        <p class="formHeading">Network map</p>
+        <p class="formHeading">Interactome</p>
         <div class="panel" id="forceIndivSearch">
           <p class="panelHeading">Search for an interaction</p>
-          <form class="panelForm">
+          <form class="panelForm" onsubmit="return false;">
             <p class="panelFormHeader">Unknown protein:</p>
             <input class="inputText" type="text" name="indiv1" id="indiv1Input" onkeydown="if (event.keyCode === 13) updateSearchIndivs();"><br>
             <p class="panelFormHeader">Known protein:</p>
@@ -24,18 +24,19 @@
 
       <div id="parameters" class="accordion close">
         <input class="toggle-inbox" id="_1" type="checkbox">
-        <label class="label formHeading accordionHeading" for="_1">
+        <label class="label panelHeading accordionHeading" for="_1"
+               style="padding-left: 20px;">
           Additional filters
         </label>
         <div class="panel" id="chooseLineType">
-          <form class="panelForm">
-            <p class="panelFormHeader">Minimum E-value</p>
-            <input class="inputText" type="text" name="startYear" id="startYearInput_line" onkeydown="if (event.keyCode === 13) update();"><br>
+          <form class="panelForm" onsubmit="return false;">
+            <p class="panelFormHeader">Minimum E-value:</p>
+            <input class="inputText" type="text" id="evalue-cutoff" onkeydown="if (event.keyCode === 13) {update();}"><br>
             <button type="button" class="updateButton" onclick="update();">Apply</button>
           </form>
-          <form class="panelForm">
-            <p class="panelFormHeader">Minimum AF-Multimer pDockQ</p>
-            <input class="inputText" type="text" name="startYear" id="startYearInput_line" onkeydown="if (event.keyCode === 13) update();"><br>
+          <form class="panelForm" onsubmit="return false;">
+            <p class="panelFormHeader">Minimum AF-Multimer pDockQ:</p>
+            <input class="inputText" type="text" id="af2-pdockq-cutoff" onkeydown="if (event.keyCode === 13) update();"><br>
             <button type="button" class="updateButton" onclick="update();">Apply</button>
           </form>
         </div>

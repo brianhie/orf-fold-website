@@ -16,7 +16,6 @@ function toggleItem() {
     }
     if (itemClass === 'accordion close') {
         this.parentNode.className = 'accordion open';
-        clearDate();
     }
 }
 
@@ -81,9 +80,55 @@ function renderGraph() {
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             var graph_json = JSON.parse(xmlhttp.responseText);
+            console.log(graph_json);
+
             G = new jsnx.Graph();
-            for (var n in graph_json.nodes) {
-                var node = graph_json.nodes[n];
+
+            var filtered_nodes = [];
+            var filtered_links = [];
+            var node_to_filtered_id = {};
+            var evalue_cutoff = document.getElementById("evalue-cutoff").value;
+            if (evalue_cutoff === "") {
+                evalue_cutoff = 0.;
+            }
+            var af2_pdockq_cutoff = document.getElementById("af2-pdockq-cutoff").value;
+            if (af2_pdockq_cutoff === "") {
+                af2_pdockq_cutoff = 0.;
+            }
+            for (var e in graph_json.links) {
+                var edge = graph_json.links[e];
+                var source = graph_json.nodes[edge.source];
+                var target = graph_json.nodes[edge.target];
+
+                if (source.evalue !== null &&
+                    source.evalue < evalue_cutoff) {
+                    continue;
+                }
+                if (target.evalue !== null &&
+                    target.evalue < evalue_cutoff) {
+                    continue;
+                }
+                if (edge.alphafold_pdockq !== null &&
+                    edge.alphafold_pdockq < af2_pdockq_cutoff) {
+                    continue;
+                }
+
+                if (!(source.name in node_to_filtered_id)) {
+                    node_to_filtered_id[source.name] = Object.keys(node_to_filtered_id).length;
+                    filtered_nodes.push(source);
+                }
+                if (!(target.name in node_to_filtered_id)) {
+                    node_to_filtered_id[target.name] = Object.keys(node_to_filtered_id).length;
+                    filtered_nodes.push(target);
+                }
+
+                edge.source = node_to_filtered_id[source.name];
+                edge.target = node_to_filtered_id[target.name];
+                filtered_links.push(edge);
+            }
+
+            for (var n in filtered_nodes) {
+                var node = filtered_nodes[n];
                 G.addNode(node.id, {
                     'name': node.name,
                     'role': node.role,
@@ -93,17 +138,23 @@ function renderGraph() {
                     'E-value': node.evalue,
                 });
             }
-            for (var e in graph_json.links) {
-                var edge = graph_json.links[e];
-                var source = graph_json.nodes[edge.source];
-                var target = graph_json.nodes[edge.target];
+
+            for (var e in filtered_links) {
+                var edge = filtered_links[e];
+                var source = filtered_nodes[edge.source];
+                var target = filtered_nodes[edge.target];
                 G.addEdge(source.id, target.id, {
                     "AF-Multimer pDockQ": edge.alphafold_pdockq,
                     "ESMFold pDockQ": edge.esmfold_pdockq,
                 });
             }
+
             clearChart();
-            svg_graph = draw_force_graph(graph_json);
+
+            var filtered_json = {
+                'nodes': filtered_nodes, 'links': filtered_links
+            };
+            svg_graph = draw_force_graph(filtered_json);
 
             const svgElement = document.querySelector('svg');
             svgElement.addEventListener("click", function(event) {
