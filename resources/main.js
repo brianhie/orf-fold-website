@@ -89,7 +89,7 @@ function renderGraph() {
                     'role': node.role,
                     'score': node.score,
                     'UniProt ID': node.uniprot_id,
-                    //'pident': node.pident,
+                    'Sequence identity': node.pident,
                     'E-value': node.evalue,
                 });
             }

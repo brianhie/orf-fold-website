@@ -68,7 +68,7 @@ function wrap(text, width) {
                         .attr("x", x)
                         .attr("y", y)
                         .attr("dy", dy + "em")
-                        .attr("font-size", "16px");
+                        .attr("font-size", "14px");
 
         while (word = words.pop()) {
             dy = 0;
@@ -101,7 +101,7 @@ function wrap(text, width) {
                     line = [];
                 } else if (word === "||") {
                     line = [];
-                    lineNumber++;
+                    lineNumber += 0.5;
                 } else {
                     line = [word];
                 }
@@ -109,7 +109,7 @@ function wrap(text, width) {
                     .attr("x", x)
                     .attr("y", y)
                     .attr("dy", ++lineNumber * lineHeight + dy + "em")
-                    .attr("font-size", "16px");
+                    .attr("font-size", "14px");
                 tspan.text(line.join(" "));
             }
         }
@@ -411,44 +411,56 @@ function draw_infobox_edge(svg, name1, name2, data1, data2, caption_text) {
     var right_offset = 250;
     var padding = 10;
 
-    var url = `/structure.html?protein_A=${name1}&protein_B_uniprot=${data2["UniProt ID"]}&protein_B=${name2}`
-    var download_link = svg.append("a")
-        .attr("id", "download_infobox")
-        .attr("xlink:href", url)
-        .moveToFront(); // You can use .attr("xlink:href", url) if needed
-
-    var download_text = download_link.append("text")
-        .attr("x", +svg.attr("width") - right_offset - padding)
-        .attr("y", curr_global_offset + padding)
-        .attr("fill", "blue")
-        .attr("class", "download-link")
-        .text("View structure");
-    var bbox_download = download_link.node().getBBox();
-
     var caption = svg.append("text")
         .attr("id", "caption_infobox")
-        .attr("x", +svg.attr("width") - right_offset - padding)
-        .attr("y", curr_global_offset + padding + 20)
+        .attr("x", 0)
+        .attr("y",  curr_global_offset + padding)
         .attr("fill", "black")
         .text(caption_text)
-        .call(wrap, right_offset);
-    var bbox = caption.node().getBBox();
+        .call(wrap, right_offset)
+        .moveToFront();
+    var caption_bbox = caption.node().getBBox();
 
-    var rect = svg.insert("rect", "#download_infobox")
+    var image_url = `https://raw.githubusercontent.com/brianhie/orf-fold-website/main/data/imgs/${name1}_${data2["UniProt ID"]}.png`;
+    var image = svg.append("image")
+        .attr("id", "image_infobox")
+        .attr("xlink:href", image_url)
+        .attr("width", 200)
+        .attr("height", 200)
+        .attr("x", 0)
+        .attr("y", caption_bbox.y + caption_bbox.height + padding);
+    var image_bbox = image.node().getBBox();
+
+    var download_url = `/structure.html?protein_A=${name1}&protein_B_uniprot=${data2["UniProt ID"]}&protein_B=${name2}`
+    var download_link = svg.append("a")
+        .attr("id", "download_infobox")
+        .attr("xlink:href", download_url); // You can use .attr("xlink:href", url) if needed
+    var download_text = download_link.append("text")
+        .attr("x", 0)
+        .attr("y", image_bbox.y + image_bbox.height + padding + 5)
+        .attr("fill", "#202A44")
+        .attr("class", "download-link")
+        .text("View structure");
+    var download_bbox = download_link.node().getBBox();
+
+    var rect_width = Math.max(image_bbox.width, download_bbox.width, caption_bbox.width);
+    var rect_height = (download_bbox.y + download_bbox.height) - caption_bbox.y + padding;
+    var rect = svg.insert("rect", "#caption_infobox")
         .attr("id", "rect_infobox")
-        .attr("x", bbox_download.x - padding)
-        .attr("y", bbox_download.y - padding)
-        .attr("width", bbox.width + 2 * padding)
-        .attr("height", bbox.height + 2 * padding + 20)
+        .attr("x", caption_bbox.x - padding)
+        .attr("y", caption_bbox.y - padding)
+        .attr("width", rect_width + padding * 2)
+        .attr("height", rect_height + padding)
         .attr("fill", "white")
         .attr("filter", "url(#shadow)");
 
     // Make box right-justified.
-    bbox = rect.node().getBBox();
-    offset = +svg.attr("width") - (bbox.x + bbox.width) - padding;
-    rect.attr("x", bbox.x + offset);
-    caption.selectAll("tspan").attr("x", bbox.x + offset + padding);
-    download_text.attr("x", bbox.x + offset + padding);
+    var bbox = rect.node().getBBox();
+    var new_x = +svg.attr("width") - bbox.width - padding;
+    rect.attr("x", new_x);
+    image.attr("x", new_x + padding);
+    download_text.attr("x", new_x + padding);
+    caption.selectAll("tspan").attr("x", new_x + padding);
 
     curr_global_offset += bbox.height + padding;
 }
@@ -579,8 +591,9 @@ function graph_reset(svg) {
         .style("stroke-width", 1)
         .style("stroke", "#C2C2C2");
 
-    d3.selectAll("#download_infobox").remove();
     d3.selectAll("#caption_infobox").remove();
+    d3.selectAll("#image_infobox").remove();
+    d3.selectAll("#download_infobox").remove();
     d3.selectAll("#rect_infobox").remove();
     curr_global_offset = 30;
 
