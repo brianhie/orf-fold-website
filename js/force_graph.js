@@ -128,7 +128,7 @@ function dragend(d) {
 }
 
 function draw_force_graph(graph_json) {
-    var width = window.innerWidth - 375,
+    var width = window.innerWidth - 300,
         height = window.innerHeight - 10,
         radius = 9;
 
@@ -137,9 +137,9 @@ function draw_force_graph(graph_json) {
         .friction(0.9)
         .linkDistance(20)
         .charge(-30)
-        .gravity(0.1)
+        .gravity(0.15)
         .theta(0.8)
-        .alpha(0.00001)
+        .alpha(0.1)
         .size([width, height]);
 
     var svg_graph = d3.select("#graph").append("svg")
@@ -244,7 +244,7 @@ function draw_force_graph(graph_json) {
         .attr('class', 'legend')
         .attr('transform', function(d, i) {
             var height = legendRectSize + legendSpacing;
-            var offset =  -30;
+            var offset = -30;
             var horz = 30;
             var vert = i * height - offset;
             return 'translate(' + horz + ',' + vert + ')';
@@ -257,7 +257,7 @@ function draw_force_graph(graph_json) {
         .style('stroke', color);
 
     legend.append('text')
-        .attr('x', legendRectSize + legendSpacing)
+        .attr('x', legendRectSize + legendSpacing + 3)
         .attr('y', legendRectSize - legendSpacing)
         .text(function(d) { return d; });
 
@@ -438,7 +438,7 @@ function draw_infobox_edge(svg, name1, name2, data1, data2, caption_text) {
     var download_text = download_link.append("text")
         .attr("x", 0)
         .attr("y", image_bbox.y + image_bbox.height + padding + 5)
-        .attr("fill", "#202A44")
+        .attr("fill", "#1338be")
         .attr("class", "download-link")
         .text("View structure");
     var download_bbox = download_link.node().getBBox();
