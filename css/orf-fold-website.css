@@ -26,7 +26,7 @@ body {
 
 .updateButton{
     font-family: Consolas, monospace, monospace;
-    padding: 15px 20px 15px 20px;
+    padding: 12px 15px 12px 15px;
     background-color: #3a3d45;
     color: #ddd;
     border: solid;
@@ -154,6 +154,6 @@ body {
 }
 
 .evodesign-logo img {
-    width: 60px;
+    width: 50px;
     height: auto;
 }
