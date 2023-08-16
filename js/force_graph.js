@@ -142,9 +142,14 @@ function draw_force_graph(graph_json) {
         .alpha(0.1)
         .size([width, height]);
 
-    var svg_graph = d3.select("#graph").append("svg")
+    var svg = d3.select("#graph").append("svg")
         .attr("width", width)
         .attr("height", height);
+
+    var svg_graph = svg.call(d3.behavior.zoom().on("zoom", function () {
+        svg_graph.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
+    }))
+        .append("g");
 
     force
         .nodes(graph_json.nodes)
@@ -234,32 +239,44 @@ function draw_force_graph(graph_json) {
             }
         });
 
-    var roles = [ 'Unknown protein', 'Known protein' ];
+    var roles = [ "Unknown protein", "Known protein" ];
     var legendRectSize = 18;
     var legendSpacing = 4;
-    var legend = svg_graph.selectAll('.legend')
+    var legend = svg.selectAll(".legend")
         .data(roles)
         .enter()
-        .append('g')
-        .attr('class', 'legend')
-        .attr('transform', function(d, i) {
+        .append("g")
+        .attr("class", "legend")
+        .attr("id", "legend1")
+        .attr("transform", function(d, i) {
             var height = legendRectSize + legendSpacing;
             var offset = -30;
             var horz = 30;
             var vert = i * height - offset;
-            return 'translate(' + horz + ',' + vert + ')';
+            return "translate(" + horz + "," + vert + ")";
         });
 
-    legend.append('rect')
-        .attr('width', legendRectSize)
-        .attr('height', legendRectSize)
-        .style('fill', color)
-        .style('stroke', color);
+    legend.append("rect")
+        .attr("width", legendRectSize)
+        .attr("height", legendRectSize)
+        .style("fill", color)
+        .style("stroke", color);
 
-    legend.append('text')
-        .attr('x', legendRectSize + legendSpacing + 3)
-        .attr('y', legendRectSize - legendSpacing)
+    legend.append("text")
+        .attr("x", legendRectSize + legendSpacing + 3)
+        .attr("y", legendRectSize - legendSpacing)
         .text(function(d) { return d; });
+
+    var legend_bbox = legend.node().getBBox();
+    padding = 10;
+    console.log(legend_bbox);
+    svg.insert("rect", "#legend1")
+        .attr("x", legendRectSize + legendSpacing)
+        .attr("y", legendRectSize - legendSpacing + 7)
+        .attr("width", legendRectSize * 9.6)
+        .attr("height", legendRectSize * 3.2)
+        .attr("fill", "#fff")
+        .attr("opacity", 0.9);
 
     force.on("tick", function() {
         graph_link
@@ -286,7 +303,7 @@ function draw_force_graph(graph_json) {
         d.fixed = true;
     });
 
-    return svg_graph;
+    return svg;
 }
 
 function strip_name(name) {
