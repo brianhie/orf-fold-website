@@ -37,12 +37,15 @@
           <form class="panelForm" onsubmit="return false;">
             <p class="panelFormHeader">Minimum AF-Multimer pDockQ:</p>
             <input class="inputText" type="text" id="af2-pdockq-cutoff" onkeydown="if (event.keyCode === 13) updateFilter();"><br>
-            <button type="button" class="updateButton" onclick="updateFilter();">Apply</button>
+          </form>
+          <form class="panelForm" onsubmit="return false;">
+            <p class="panelFormHeader">Minimum ESMFold pDockQ:</p>
+            <input class="inputText" type="text" id="esmfold-pdockq-cutoff" onkeydown="if (event.keyCode === 13) updateFilter();"><br>
           </form>
           <form class="panelForm" onsubmit="return false;">
             <p class="panelFormHeader">Minimum E-value:</p>
             <input class="inputText" type="text" id="evalue-cutoff" onkeydown="if (event.keyCode === 13) {updateFilter();}"><br>
-            <button type="button" class="updateButton" onclick="updateFilter();">Apply</button>
+            <button type="button" class="updateButton" onclick="updateFilter();" style="margin-bottom: 50px;">Apply</button>
           </form>
         </div>
       </div>
