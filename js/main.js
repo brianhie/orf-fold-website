@@ -1,5 +1,5 @@
 var G = null;
-var svg_graph = null;
+var svg = null;
 
 function getURLParameters(url) {
     const params = new URL(url).searchParams;
@@ -108,15 +108,15 @@ function updateSearchIndivs() {
     var indiv1Str = document.getElementById("indiv1Input").value.trim();
     var indiv2Str = document.getElementById("indiv2Input").value.trim();
     if (indiv1Str === "" && indiv2Str === "") {
-        graph_reset(svg_graph);
+        graph_reset(svg);
         return;
     }
     if (indiv1Str !== "" && indiv2Str === "") {
-        search_name(indiv1Str, G, svg_graph);
+        search_name(indiv1Str, G, svg);
     } else if (indiv1Str === "" && indiv2Str !== "") {
-        search_name(indiv2Str, G, svg_graph);
+        search_name(indiv2Str, G, svg);
     } else {
-        shortest_path(indiv1Str, indiv2Str, G, svg_graph);
+        shortest_path(indiv1Str, indiv2Str, G, svg);
     }
 }
 
@@ -221,7 +221,7 @@ function renderGraph() {
             var filtered_json = {
                 "nodes": filtered_nodes, "links": filtered_links
             };
-            svg_graph = draw_force_graph(filtered_json);
+            svg = draw_force_graph(filtered_json);
 
             updateSearchIndivs();
         }

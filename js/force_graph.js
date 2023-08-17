@@ -145,15 +145,15 @@ function draw_force_graph(graph_json) {
         .theta(1.5)
         .alpha(0.1);
 
-    var svg = d3.select("#graph").append("svg")
-        .call(d3.behavior.zoom().on("zoom", zoom))
+    svg = d3.select("#graph").append("svg")
         .attr("width", width)
         .attr("height", height);
 
+    var svg_intermediate = svg.append("g").call(d3.behavior.zoom().on("zoom", zoom));
+    var svg_graph = svg_intermediate.append("g");
     function zoom() {
         svg_graph.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
     }
-    var svg_graph = svg.append("g");
 
     force
         .nodes(graph_json.nodes)
@@ -312,7 +312,7 @@ function draw_force_graph(graph_json) {
     //var svg_graph_bbox = getCompositeBoundingBox(svg_graph.node());
     var svg_graph_bbox = svg_graph.node().getBBox();
     console.log(svg_graph_bbox);
-    svg.append("rect")
+    svg_intermediate.append("rect")
         .attr("id", "back_rectangle")
         .attr("x", -100000)
         .attr("y", -100000)
