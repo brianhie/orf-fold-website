@@ -136,23 +136,24 @@ function draw_force_graph(graph_json) {
         radius = 9;
 
     var force = d3.layout.force()
+        .size([width, height])
         .linkStrength(0.1)
         .friction(0.9)
-        .linkDistance(20)
+        .linkDistance(10)
         .charge(-30)
-        .gravity(0.15)
-        .theta(0.8)
-        .alpha(0.1)
-        .size([width, height]);
+        .gravity(0.14)
+        .theta(1.5)
+        .alpha(0.1);
 
     var svg = d3.select("#graph").append("svg")
+        .call(d3.behavior.zoom().on("zoom", zoom))
         .attr("width", width)
         .attr("height", height);
 
-    var svg_graph = svg.call(d3.behavior.zoom().on("zoom", function () {
-        svg_graph.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
-    }))
-        .append("g");
+    function zoom() {
+        svg_graph.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
+    }
+    var svg_graph = svg.append("g");
 
     force
         .nodes(graph_json.nodes)
@@ -270,9 +271,7 @@ function draw_force_graph(graph_json) {
         .attr("y", legendRectSize - legendSpacing)
         .text(function(d) { return d; });
 
-    var legend_bbox = legend.node().getBBox();
     padding = 10;
-    console.log(legend_bbox);
     svg.insert("rect", "#legend1")
         .attr("x", legendRectSize + legendSpacing)
         .attr("y", legendRectSize - legendSpacing + 7)
@@ -288,15 +287,19 @@ function draw_force_graph(graph_json) {
             .attr("x2", function(d) { return d.target.x; })
             .attr("y2", function(d) { return d.target.y; });
 
-        circle
+        /*circle
             .attr("cx", function(d) { return d.x = Math.max(radius, Math.min(width - radius, d.x)); })
-            .attr("cy", function(d) { return d.y = Math.max(radius, Math.min(height - radius, d.y)); });
+            .attr("cy", function(d) { return d.y = Math.max(radius, Math.min(height - radius, d.y)); });*/
+        circle
+            .attr("cx", function(d) { return d.x; })
+            .attr("cy", function(d) { return d.y; });
 
         d3.selectAll(".indivLabel")
             .attr("x", function(d) { return d.x + 18; })
             .attr("y", function(d) { return d.y - 2; });
     });
 
+    //force.start();
     for (var i = 0; i < 300; i++) {
         force.tick();
     }
@@ -304,6 +307,27 @@ function draw_force_graph(graph_json) {
 
     graph_json.nodes.forEach(function(d) {
         d.fixed = true;
+    });
+
+    //var svg_graph_bbox = getCompositeBoundingBox(svg_graph.node());
+    var svg_graph_bbox = svg_graph.node().getBBox();
+    console.log(svg_graph_bbox);
+    svg.append("rect")
+        .attr("id", "back_rectangle")
+        .attr("x", -100000)
+        .attr("y", -100000)
+        .attr("width", 1000000)
+        .attr("height", 1000000)
+        .attr("opacity", 0.)
+        .moveToBack();
+
+    var back_rect = document.getElementById("back_rectangle")
+    back_rect.addEventListener("click", function(event) {
+        if (event.target === back_rect) {
+            graph_reset(svg_graph);
+            document.getElementById("indiv1Input").value = "";
+            document.getElementById("indiv2Input").value = "";
+        }
     });
 
     return svg;
@@ -377,7 +401,9 @@ function label_links(svg, filter_fn) {
 }
 
 function draw_infobox_node(svg, caption_text) {
-    var filter = svg.append("defs")
+    var infobox = svg.append("g");
+
+    var filter = infobox.append("defs")
         .append("filter")
         .attr("id", "shadow")
         .append("feDropShadow")
@@ -389,7 +415,7 @@ function draw_infobox_node(svg, caption_text) {
     var right_offset = 250;
     var padding = 10;
 
-    var caption = svg.append("text")
+    var caption = infobox.append("text")
         .attr("id", "caption_infobox")
         .attr("x", +svg.attr("width") - right_offset - padding)
         .attr("y", curr_global_offset + padding)
@@ -398,7 +424,7 @@ function draw_infobox_node(svg, caption_text) {
         .call(wrap, right_offset);
 
     var bbox = caption.node().getBBox();
-    var rect = svg.insert("rect", "#caption_infobox")
+    var rect = infobox.insert("rect", "#caption_infobox")
         .attr("id", "rect_infobox")
         .attr("x", bbox.x - padding)
         .attr("y", bbox.y - padding)

@@ -75,7 +75,11 @@ function checkFloat(id) {
 
 function updateFilter() {
     if (!checkFloat("af2-pdockq-cutoff")) {
-        alert("pDockQ cutoff is not valid.");
+        alert("AlphaFold-Multimer pDockQ cutoff is not valid.");
+        return;
+    }
+    if (!checkFloat("esmfold-pdockq-cutoff")) {
+        alert("ESMFold pDockQ cutoff is not valid.");
         return;
     }
     if (!checkFloat("evalue-cutoff")) {
@@ -121,6 +125,14 @@ d3.selection.prototype.moveToFront = function() {
         this.parentNode.appendChild(this);
     });
 };
+d3.selection.prototype.moveToBack = function() {
+    return this.each(function() {
+        var firstChild = this.parentNode.firstChild;
+        if (firstChild) {
+            this.parentNode.insertBefore(this, firstChild);
+        }
+    });
+};
 
 var xmlhttp = new XMLHttpRequest();
 
@@ -141,6 +153,10 @@ function renderGraph() {
             if (af2_pdockq_cutoff === "") {
                 af2_pdockq_cutoff = 0.;
             }
+            var esmfold_pdockq_cutoff = document.getElementById("esmfold-pdockq-cutoff").value;
+            if (esmfold_pdockq_cutoff === "") {
+                esmfold_pdockq_cutoff = 0.;
+            }
             for (var e in graph_json.links) {
                 var edge = graph_json.links[e];
                 var source = graph_json.nodes[edge.source];
@@ -156,6 +172,10 @@ function renderGraph() {
                 }
                 if (edge.alphafold_pdockq !== null &&
                     edge.alphafold_pdockq < af2_pdockq_cutoff) {
+                    continue;
+                }
+                if (edge.esmfold_pdockq !== null &&
+                    edge.esmfold_pdockq < esmfold_pdockq_cutoff) {
                     continue;
                 }
 
@@ -202,15 +222,6 @@ function renderGraph() {
                 "nodes": filtered_nodes, "links": filtered_links
             };
             svg_graph = draw_force_graph(filtered_json);
-
-            const svgElement = document.querySelector("svg");
-            svgElement.addEventListener("click", function(event) {
-                if (event.target === svgElement) {
-                    graph_reset(svg_graph);
-                    document.getElementById("indiv1Input").value = "";
-                    document.getElementById("indiv2Input").value = "";
-                }
-            });
 
             updateSearchIndivs();
         }
