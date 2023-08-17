@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <title>Interactome | Structure viewer</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+
     <!-- Molstar CSS & JS -->
     <link rel="stylesheet" type="text/css" href="css/structure.css">
     <link rel="stylesheet" type="text/css" href="css/pdbe-molstar-3.1.2.css">
@@ -19,8 +23,7 @@
     <!-- Molstar container -->
     <div id="myViewer" class="myViewer"></div>
 
-    <button class="download-button" id="downloadStructureButton"
-            style="margin-top: 150px;">
+    <button class="download-button" id="downloadStructureButton">
       Download structure
     </button>
     <br>
@@ -31,6 +34,12 @@
     <button class="download-button" id="interactomeButton">
       View in interaction network
     </button>
+
+    <div class="evodesign-logo">
+      <a href="https://evodesign.org">
+        <img src="images/logo_black.svg">
+      </a>
+    </div>
 
     <script src="js/structure.js"></script>
   </body>

@@ -7,6 +7,7 @@ body {
 }
 
 #shakeosphere_form {
+    position:relative;
     background-color: #3a3d45;
     padding: 0px;
     border: none;
@@ -14,18 +15,18 @@ body {
     width: 290px;
     height: 100%;
     /*display: table;*/
-    font-family: Consolas, monospace, monospace;
+    font-family: Consolas, 'Roboto Mono', monospace, monospace;
     overflow: auto;
 }
 
 #graph {
-    font-family: Consolas, monospace, monospace;
+    font-family: Consolas, 'Roboto Mono', monospace, monospace;
     font-size: 16px;
 }
 
 .updateButton{
-    font-family: Consolas, monospace, monospace;
-    padding: 15px 20px 15px 20px;
+    font-family: Consolas, 'Roboto Mono', monospace, monospace;
+    padding: 12px 15px 12px 15px;
     background-color: #3a3d45;
     color: #ddd;
     border: solid;
@@ -43,7 +44,7 @@ body {
 }
 
 .inputText, .select  {
-    font-family: Consolas, monospace, monospace;
+    font-family: Consolas, 'Roboto Mono', monospace, monospace;
     font-size: 14px;
     padding: 8px;
     border: none;
@@ -144,4 +145,15 @@ body {
 
 .download-link:hover {
     text-decoration: underline;
+}
+
+.evodesign-logo {
+    position: absolute;
+    bottom: 20px;
+    left: 18px;
+}
+
+.evodesign-logo img {
+    width: 50px;
+    height: auto;
 }
